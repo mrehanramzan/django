@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<style>
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .logout-btn {
+        background: #ef4444;
+        padding: 8px 14px;
+        color: white;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .logout-btn:hover {
+        background: #dc2626;
+    }
+
+    .welcome {
+        margin-bottom: 20px;
+        font-size: 16px;
+        color: #374151;
+    }
+
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 16px;
+        margin-bottom: 30px;
+    }
+
+    .card {
+        background: #f9fafb;
+        padding: 18px;
+        border-radius: 10px;
+        box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+        text-align: center;
+        transition: transform 0.2s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+
+    .card h3 {
+        margin-bottom: 8px;
+        font-size: 18px;
+        color: #111827;
+    }
+
+    .card p {
+        font-size: 14px;
+        color: #6b7280;
+    }
+
+    .charts {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    canvas {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+    }
+
+    @media (max-width: 768px) {
+        .charts {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="dashboard-header">
+    <h2>Dashboard</h2>
+    {% comment %} <a href="{% url 'logout' %}" class="logout-btn">Logout</a> {% endcomment %}
+</div>
+
+<p class="welcome">
+    Welcome, <strong>{{ request.user.email }}</strong>
+</p>
+
+<!-- Info Cards -->
+<div class="dashboard-grid">
+    <div class="card">
+        <h3>Profile</h3>
+        <p>View and update your profile</p>
+    </div>
+    <div class="card">
+        <h3>Settings</h3>
+        <p>Account preferences</p>
+    </div>
+    <div class="card">
+        <h3>Security</h3>
+        <p>Change password & access control</p>
+    </div>
+    <div class="card">
+        <h3>Activity</h3>
+        <p>Recent actions overview</p>
+    </div>
+</div>
+
+<!-- Charts -->
+<div class="charts">
+    <canvas id="lineChart"></canvas>
+    <canvas id="barChart"></canvas>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Line Chart Example (User Activity)
+    const lineCtx = document.getElementById('lineChart').getContext('2d');
+    const lineChart = new Chart(lineCtx, {
+        type: 'line',
+        data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+                label: 'Logins',
+                data: [12, 19, 3, 5, 2, 3, 8],
+                borderColor: '#4f46e5',
+                backgroundColor: 'rgba(79, 70, 229, 0.2)',
+                fill: true,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: true, position: 'top' },
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+
+    // Bar Chart Example (Activity Types)
+    const barCtx = document.getElementById('barChart').getContext('2d');
+    const barChart = new Chart(barCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Profile Update', 'Password Change', 'Settings Change', 'Login'],
+            datasets: [{
+                label: 'Actions',
+                data: [5, 2, 3, 8],
+                backgroundColor: [
+                    '#4f46e5',
+                    '#6366f1',
+                    '#8b5cf6',
+                    '#a78bfa'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+</script>
+{% endblock %}
